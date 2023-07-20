@@ -1,8 +1,8 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import jwt from 'jsonwebtoken';
-import authenticate from '../src/middlewares/authMiddleware';
-import { getJwtKey } from '../src/helpers/tokenConfig';
+import authenticate from '../../src/middlewares/authMiddleware';
+import { getJwtKey } from '../../src/helpers/tokenConfig';
 const key = 'synthetic-test-key-only-32-characters-minimum';
 function accepts(token?: string) {
   let accepted = false;
