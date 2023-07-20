@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 
-// Function to encrypt data using bcrypt
-export const encryptData = (data: string) => bcrypt.hashSync(data, 10);
+const SALT_ROUNDS = 10;
 
-// Function to compare data and hash using bcrypt
-export const compareData = (data: string, hash: string) => bcrypt.compareSync(data, hash);
+// Async bcrypt runs on the libuv pool, so hashing a password does not stall other requests.
+export const encryptData = (data: string): Promise<string> => bcrypt.hash(data, SALT_ROUNDS);
+
+export const compareData = (data: string, hash: string): Promise<boolean> => bcrypt.compare(data, hash);

@@ -19,7 +19,7 @@ const addUser = async () => {
     },
   });
   if (!user) {
-    const encryptedPassword = encryptData(userData.password);
+    const encryptedPassword = await encryptData(userData.password);
     const userObj = await prisma.user.create({
       data: { ...userData, password: encryptedPassword },
     });

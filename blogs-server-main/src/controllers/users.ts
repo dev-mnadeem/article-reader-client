@@ -22,7 +22,7 @@ export const handleSignup = async (req: Request, res: Response) => {
   if (user) {
     return sendResponse(res, null, 'User already exists', RESPONSE_CODES.conflictError);
   }
-  const encryptedPassword = encryptData(password);
+  const encryptedPassword = await encryptData(password);
 
   await prisma.user.create({
     data: {
@@ -44,7 +44,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     },
   });
   if (user) {
-    const isAuth = compareData(password, user.password);
+    const isAuth = await compareData(password, user.password);
     const jwtKey = getJwtKey();
     if (isAuth) {
       const token = jwt.sign({ user: user.id }, jwtKey, { algorithm: 'HS256', expiresIn: '1h' });

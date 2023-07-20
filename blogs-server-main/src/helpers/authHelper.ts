@@ -13,7 +13,7 @@ export const generateAuthToken = async (email: string, password: string) => {
     },
   });
   if (user) {
-    const isAuth = compareData(password, user.password);
+    const isAuth = await compareData(password, user.password);
     const jwtKey = getJwtKey();
     if (isAuth) {
       token = jwt.sign({ user: user.id }, jwtKey, { algorithm: 'HS256', expiresIn: '1h' });
