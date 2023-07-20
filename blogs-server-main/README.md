@@ -1,3 +1,12 @@
-# Blog API package
+# Fieldnotes API package
 
-See the [monorepo guide](../README.md) for setup, architecture, source context, and verification limits. This package uses npm and Prisma/PostgreSQL; `npm run typecheck` and `npm run test:unit` are offline checks after client generation. `npm test` writes to a real database and was not run in the review. Read `.env.example`, configure a private signing key, and deliberately migrate a local database before starting. The feed is shared by all authenticated users.
+Express + Prisma API for the [Fieldnotes monorepo](../README.md). Install with npm (`npm ci --ignore-scripts`), copy `.env.example` to `.env`, then `npx prisma generate` and `npx prisma migrate deploy`.
+
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` | ts-node with reload on 127.0.0.1:8080 |
+| `npm run build` / `npm start` | compile to `dist/` and run it |
+| `npm run seed` | fictional demo authors and notes |
+| `npm run test:unit` | offline tests |
+| `npm run test:integration` | PostgreSQL tests; wipes the database in `TEST_DATABASE_URL` |
+| `npm run lint`, `npm run typecheck`, `npm run format:check` | static checks |

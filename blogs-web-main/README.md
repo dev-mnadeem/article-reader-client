@@ -1,3 +1,10 @@
-# Fieldnotes browser package
+# Fieldnotes web package
 
-See the [monorepo guide](../README.md) and [synthetic feed preview](../docs/blog-desktop.png). Install with the checked-in Yarn 1 lock. This CRA application needs `REACT_APP_API_URL` pointing at the companion Express `/api` base; it is a public configuration value. `yarn test --watchAll=false --runInBand` runs the eleven component tests, and `yarn build` produces the browser bundle. Cookies are JavaScript-readable and sign out is local; the server, not the UI route guard, authorizes requests.
+React + MUI client for the [Fieldnotes monorepo](../README.md), built with Vite. Install with the checked-in Yarn 1 lock (`yarn install --frozen-lockfile --ignore-scripts`). `REACT_APP_API_URL` (see `.env.example`) points at the API's `/api` base and is baked in at build time; it is a public value.
+
+| Script | Purpose |
+| --- | --- |
+| `yarn start` | dev server on http://localhost:3000 |
+| `yarn build` / `yarn preview` | type-check, bundle to `build/`, serve it |
+| `yarn test` | Vitest + Testing Library |
+| `yarn lint` | ESLint, zero warnings allowed |
