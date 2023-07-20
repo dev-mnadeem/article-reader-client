@@ -1,5 +1,5 @@
 import { useCallback, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Button, Link } from '@mui/material';
 import { AuthContext } from 'contexts/AuthContext';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -10,6 +10,7 @@ import { SigninPayload } from 'types/signin';
 import { TextInput } from 'components/TextInput/TextInput';
 import { routes } from 'constants/routes';
 import { login } from 'services/authService';
+import { AUTH_COOKIE } from 'services/baseService';
 
 export const SigninForm = (): JSX.Element => {
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -18,7 +19,7 @@ export const SigninForm = (): JSX.Element => {
     async (values: SigninPayload, { setFieldError }: FormikHelpers<SigninPayload>) => {
       await login(values)
         .then((response) => {
-          Cookies.set('authtoken', response.data.payload.authtoken, {
+          Cookies.set(AUTH_COOKIE, response.data.payload.authtoken, {
             sameSite: 'strict',
             secure: window.location.protocol === 'https:',
             expires: 1 / 24,
@@ -49,7 +50,7 @@ export const SigninForm = (): JSX.Element => {
           </Form>
         )}
       </Formik>
-      <Link href={routes.signup} variant="body2" underline="hover">
+      <Link component={RouterLink} to={routes.signup} variant="body2" underline="hover">
         Don't have an account? Sign Up
       </Link>
     </>

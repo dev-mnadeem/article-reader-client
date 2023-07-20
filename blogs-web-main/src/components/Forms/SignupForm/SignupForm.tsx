@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Button, Link } from '@mui/material';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { signupSchema } from 'schemas/signupSchema';
@@ -18,8 +18,10 @@ export const SignupForm = (): JSX.Element => {
           navigate(routes.signin);
         })
         .catch((error) => {
+          const isDuplicate = error?.response?.status === 409;
+
           setFieldError(
-            'password',
+            isDuplicate ? 'email' : 'password',
             error?.response?.data?.message || 'Unable to complete the request. Please try again.'
           );
         });
@@ -36,16 +38,16 @@ export const SignupForm = (): JSX.Element => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <TextInput fullWidth name="name" label="Full Name" autoComplete="user-name" />
+            <TextInput fullWidth name="name" label="Full Name" autoComplete="name" />
             <TextInput fullWidth name="email" label="Email Address" type="email" autoComplete="email" />
-            <TextInput fullWidth name="password" label="Password" type="password" autoComplete="current-password" />
+            <TextInput fullWidth name="password" label="Password" type="password" autoComplete="new-password" />
             <Button type="submit" disabled={isSubmitting} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Sign Up
             </Button>
           </Form>
         )}
       </Formik>
-      <Link href={routes.signin} variant="body2" underline="hover">
+      <Link component={RouterLink} to={routes.signin} variant="body2" underline="hover">
         Already have an account? Sign In
       </Link>
     </>

@@ -72,12 +72,37 @@ describe('<Signup />', () => {
 
     userEvent.type(nameField, 'name');
     userEvent.type(emailField, 'email@email.com');
-    userEvent.type(passwordField, 'password');
+    userEvent.type(passwordField, 'password1');
 
     const submitButton = screen.getByRole('button', { name: 'Sign Up' });
 
     userEvent.click(submitButton);
 
     await waitFor(() => expect(history.location.pathname).toBe(routes.signin));
+  });
+
+  it('reports an existing account next to the email field', async () => {
+    renderComponent();
+    (axios.post as jest.Mock).mockRejectedValue({
+      response: { status: 409, data: { message: 'User already exists' } },
+    });
+
+    userEvent.type(screen.getByLabelText('Full Name'), 'Ines Calloway');
+    userEvent.type(screen.getByLabelText('Email Address'), 'ines@example.com');
+    userEvent.type(screen.getByLabelText('Password'), 'margin-notes-1');
+    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+
+    expect(await screen.findByText('User already exists')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email Address')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('asks for at least 8 password characters before calling the API', async () => {
+    renderComponent();
+
+    userEvent.type(screen.getByLabelText('Password'), 'short');
+    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+
+    expect(await screen.findByText('Password needs at least 8 characters')).toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
   });
 });

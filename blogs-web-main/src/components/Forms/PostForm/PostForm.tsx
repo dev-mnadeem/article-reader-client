@@ -31,8 +31,8 @@ export const PostForm = (): JSX.Element => {
     <Formik initialValues={{ title: '', content: '' }} onSubmit={handleSubmit} validationSchema={postSchema}>
       {({ isSubmitting }) => (
         <Form>
-          <TextInput fullWidth name="title" label="Title" type="title" autoComplete="title" />
-          <TextInput name="content" label="Content" autoComplete="content" multiline fullWidth minRows={4} />
+          <TextInput fullWidth name="title" label="Title" autoComplete="off" />
+          <TextInput name="content" label="Content" autoComplete="off" multiline fullWidth minRows={4} />
           <Button type="submit" disabled={isSubmitting} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Create Post
           </Button>

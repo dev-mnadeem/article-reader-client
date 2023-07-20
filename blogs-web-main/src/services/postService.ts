@@ -4,17 +4,14 @@ import { PostType } from 'types/post';
 
 import { baseService } from './baseService';
 
-// API endpoints
 export const postApi = {
   posts: '/posts',
 };
 
-// Function to get posts
-export function getPosts(authtoken: string): Promise<AxiosResponse<{ payload: PostType[] }>> {
-  return baseService.get(postApi.posts, { headers: { authtoken } });
+export function getPosts(): Promise<AxiosResponse<{ payload: PostType[] }>> {
+  return baseService.get(postApi.posts);
 }
 
-// Function to create a post
-export function createPost(values: NewPostPayload): Promise<AxiosResponse<void>> {
+export function createPost(values: NewPostPayload): Promise<AxiosResponse<{ payload: PostType }>> {
   return baseService.post(postApi.posts, values);
 }

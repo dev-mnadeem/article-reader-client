@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Container, Grid, Typography } from '@mui/material';
-import Cookies from 'js-cookie';
+import { AuthContext } from 'contexts/AuthContext';
 import { PostType } from 'types/post';
 
 import { Header } from 'components/Header/Header';
@@ -9,8 +9,11 @@ import { Post } from 'components/Post/Post';
 import { routes } from 'constants/routes';
 import { getPosts } from 'services/postService';
 
+type ApiFailure = { response?: { status?: number } };
+
 export const Posts = (): JSX.Element => {
   const navigate = useNavigate();
+  const { signOut } = useContext(AuthContext);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,15 +22,24 @@ export const Posts = (): JSX.Element => {
     let isActive = true;
     const fetchPosts = async (): Promise<void> => {
       try {
-        const response = await getPosts(Cookies.get('authtoken') as string);
+        const response = await getPosts();
 
         if (isActive) {
           setPosts(response.data.payload);
         }
-      } catch {
-        if (isActive) {
-          setError('Posts could not be loaded. Your session may have expired; sign out and try again.');
+      } catch (err) {
+        if (!isActive) {
+          return;
         }
+
+        // An expired or revoked token cannot recover; send the reader back to sign in.
+        if ((err as ApiFailure).response?.status === 401) {
+          signOut();
+
+          return;
+        }
+
+        setError('Posts could not be loaded. Check that the API is running and try again.');
       } finally {
         if (isActive) {
           setLoading(false);
@@ -40,7 +52,7 @@ export const Posts = (): JSX.Element => {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [signOut]);
 
   return (
     <>

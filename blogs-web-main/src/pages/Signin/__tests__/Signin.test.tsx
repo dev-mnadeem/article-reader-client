@@ -13,7 +13,7 @@ const history = createMemoryHistory();
 const renderComponent = (): void => {
   (axios.post as jest.Mock).mockImplementation((requestUrl) => {
     if (requestUrl.includes('/login')) {
-      return Promise.resolve({ data: { payload: { authtoke: 'authtoken' } } });
+      return Promise.resolve({ data: { payload: { authtoken: 'authtoken' } } });
     }
 
     return Promise.reject();

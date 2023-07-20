@@ -1,44 +1,28 @@
 import axios, { AxiosInstance } from 'axios';
 import Cookies from 'js-cookie';
 
-// Function to create Axios instance
-const apiService = (): AxiosInstance => {
-  // Default options for Axios instance
-  const defaultOptions = {
+export const AUTH_COOKIE = 'authtoken';
+
+const createApiClient = (): AxiosInstance => {
+  const instance = axios.create({
     baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api',
     timeout: 15000,
-    headers: {
-      'Content-Type': 'application/json',
-      authtoken: Cookies.get('authtoken'),
-    },
-  };
-  // Creating Axios instance
-  const instance = axios.create(defaultOptions);
+  });
 
-  // Request interceptor
-  instance.interceptors.request.use(
-    (config) => {
-      const token = Cookies.get('authtoken');
+  // Read the cookie per request: a token captured when this module loaded would be stale after sign-in.
+  instance.interceptors.request.use((config) => {
+    const token = Cookies.get(AUTH_COOKIE);
 
-      if (token) {
-        config.headers.authtoken = token;
-      } else {
-        delete config.headers.authtoken;
-      }
+    if (token) {
+      config.headers.authtoken = token;
+    } else {
+      delete config.headers.authtoken;
+    }
 
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
-
-  // Response interceptor
-  instance.interceptors.response.use(
-    (response) => response,
-    (err) => Promise.reject(err)
-  );
+    return config;
+  });
 
   return instance;
 };
 
-// Exporting base Axios instance
-export const baseService = apiService();
+export const baseService = createApiClient();
