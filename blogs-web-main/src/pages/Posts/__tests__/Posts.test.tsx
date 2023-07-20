@@ -5,6 +5,7 @@ import axios from 'axios';
 import { AuthProvider } from 'contexts/AuthContext';
 import { createMemoryHistory } from 'history';
 import Cookies from 'js-cookie';
+import type { Mock } from 'vitest';
 
 import { formatPostDate } from 'components/Post/Post';
 import { routes } from 'constants/routes';
@@ -23,7 +24,7 @@ const renderPosts = (): void => {
   );
 };
 const renderComponent = (): void => {
-  (axios.get as jest.Mock).mockImplementation((requestUrl) => {
+  (axios.get as Mock).mockImplementation((requestUrl) => {
     if (requestUrl.includes('/posts')) {
       return Promise.resolve({ data: { payload: mockedPosts } });
     }
@@ -58,14 +59,14 @@ describe('<Posts />', () => {
   });
 
   it('shows an empty state when nobody has posted yet', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: { payload: [] } });
+    (axios.get as Mock).mockResolvedValue({ data: { payload: [] } });
     renderPosts();
 
     expect(await screen.findByText(/No posts yet/)).toBeInTheDocument();
   });
 
   it('shows an error when the feed cannot load', async () => {
-    (axios.get as jest.Mock).mockRejectedValue(new Error('Network Error'));
+    (axios.get as Mock).mockRejectedValue(new Error('Network Error'));
     renderPosts();
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Posts could not be loaded');
@@ -73,7 +74,7 @@ describe('<Posts />', () => {
 
   it('signs out when the API rejects the session', async () => {
     Cookies.set('authtoken', 'expired-token');
-    (axios.get as jest.Mock).mockRejectedValue({ response: { status: 401 } });
+    (axios.get as Mock).mockRejectedValue({ response: { status: 401 } });
     renderPosts();
 
     await waitFor(() => expect(Cookies.get('authtoken')).toBeUndefined());
@@ -92,7 +93,7 @@ describe('<Posts />', () => {
   it('says when a search has no matches', async () => {
     renderComponent();
     await screen.findByText(mockedPosts[0].title);
-    (axios.get as jest.Mock).mockResolvedValue({ data: { payload: [] } });
+    (axios.get as Mock).mockResolvedValue({ data: { payload: [] } });
 
     userEvent.type(screen.getByLabelText('Search titles'), 'owl');
 

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { AuthProvider } from 'contexts/AuthContext';
 import { createMemoryHistory } from 'history';
+import type { Mock } from 'vitest';
 
 import { routes } from 'constants/routes';
 
@@ -11,7 +12,7 @@ import { Signup } from '../Signup';
 
 const history = createMemoryHistory();
 const renderComponent = (): void => {
-  (axios.post as jest.Mock).mockImplementation((requestUrl) => {
+  (axios.post as Mock).mockImplementation((requestUrl) => {
     if (requestUrl.includes('/signup')) {
       return Promise.resolve({ data: {} });
     }
@@ -83,7 +84,7 @@ describe('<Signup />', () => {
 
   it('reports an existing account next to the email field', async () => {
     renderComponent();
-    (axios.post as jest.Mock).mockRejectedValue({
+    (axios.post as Mock).mockRejectedValue({
       response: { status: 409, data: { message: 'User already exists' } },
     });
 

@@ -1,27 +1,23 @@
 import { InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
+import type { Mock } from 'vitest';
 
 type RequestHook = (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
 
-const loadRequestHook = (): RequestHook => {
-  let hook: RequestHook | undefined;
+const loadRequestHook = async (): Promise<RequestHook> => {
+  vi.resetModules();
+  const { default: freshAxios } = await import('axios');
 
-  jest.isolateModules(() => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const isolatedAxios = require('axios').default;
+  await import('services/baseService');
 
-    require('services/baseService');
-    hook = (isolatedAxios.interceptors.request.use as jest.Mock).mock.calls[0][0];
-  });
-
-  return hook as RequestHook;
+  return (freshAxios.interceptors.request.use as Mock).mock.calls[0][0];
 };
 
 describe('baseService request hook', () => {
   afterEach(() => Cookies.remove('authtoken'));
 
-  it('sends the token stored at request time, not at module load', () => {
-    const onRequest = loadRequestHook();
+  it('sends the token stored at request time, not at module load', async () => {
+    const onRequest = await loadRequestHook();
 
     Cookies.set('authtoken', 'fresh-token');
 
@@ -30,8 +26,8 @@ describe('baseService request hook', () => {
     expect(config.headers.authtoken).toBe('fresh-token');
   });
 
-  it('drops a stale header once the cookie is gone', () => {
-    const onRequest = loadRequestHook();
+  it('drops a stale header once the cookie is gone', async () => {
+    const onRequest = await loadRequestHook();
     const config = onRequest({ headers: { authtoken: 'stale' } } as unknown as InternalAxiosRequestConfig);
 
     expect(config.headers.authtoken).toBeUndefined();

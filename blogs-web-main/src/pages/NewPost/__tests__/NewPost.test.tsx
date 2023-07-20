@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { AuthProvider } from 'contexts/AuthContext';
 import { createMemoryHistory } from 'history';
+import type { Mock } from 'vitest';
 
 import { routes } from 'constants/routes';
 
@@ -11,7 +12,7 @@ import { NewPost } from '../NewPost';
 
 const history = createMemoryHistory();
 const renderComponent = (): void => {
-  (axios.post as jest.Mock).mockImplementation((requestUrl) => {
+  (axios.post as Mock).mockImplementation((requestUrl) => {
     if (requestUrl.includes('/posts')) {
       return Promise.resolve({ data: {} });
     }
