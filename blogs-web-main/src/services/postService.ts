@@ -8,8 +8,8 @@ export const postApi = {
   posts: '/posts',
 };
 
-export function getPosts(): Promise<AxiosResponse<{ payload: PostType[] }>> {
-  return baseService.get(postApi.posts);
+export function getPosts(title?: string): Promise<AxiosResponse<{ payload: PostType[] }>> {
+  return baseService.get(postApi.posts, { params: title ? { title } : undefined });
 }
 
 export function createPost(values: NewPostPayload): Promise<AxiosResponse<{ payload: PostType }>> {

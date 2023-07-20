@@ -6,6 +6,7 @@ import { AuthProvider } from 'contexts/AuthContext';
 import { createMemoryHistory } from 'history';
 import Cookies from 'js-cookie';
 
+import { formatPostDate } from 'components/Post/Post';
 import { routes } from 'constants/routes';
 import { mockedPosts } from 'fixtures/posts';
 
@@ -36,21 +37,22 @@ describe('<Posts />', () => {
   it('renders posts page', async () => {
     renderComponent();
 
-    expect(screen.getByRole('button', { name: 'Create New Post' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Create New Post' })).toBeInTheDocument();
 
     expect(await screen.findByText(mockedPosts[0].title)).toBeInTheDocument();
 
     mockedPosts.forEach((post) => {
-      expect(screen.getByText(post.title)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: post.title })).toBeInTheDocument();
       expect(screen.getByText(post.content)).toBeInTheDocument();
-      expect(screen.getByText(new Date(post.createdAt).toLocaleString())).toBeInTheDocument();
+      expect(screen.getByText(formatPostDate(post.createdAt))).toBeInTheDocument();
+      expect(screen.getByText(`${post.author?.name} ·`, { exact: false })).toBeInTheDocument();
     });
   });
 
   it('redirects to create post page when clicked on create new post button', async () => {
     renderComponent();
 
-    userEvent.click(screen.getByRole('button', { name: 'Create New Post' }));
+    userEvent.click(screen.getByRole('link', { name: 'Create New Post' }));
 
     await waitFor(() => expect(history.location.pathname).toBe(routes.newPost));
   });
@@ -76,5 +78,24 @@ describe('<Posts />', () => {
 
     await waitFor(() => expect(Cookies.get('authtoken')).toBeUndefined());
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('searches titles through the API after a short pause', async () => {
+    renderComponent();
+    await screen.findByText(mockedPosts[0].title);
+
+    userEvent.type(screen.getByLabelText('Search titles'), 'heron');
+
+    await waitFor(() => expect(axios.get).toHaveBeenLastCalledWith('/posts', { params: { title: 'heron' } }));
+  });
+
+  it('says when a search has no matches', async () => {
+    renderComponent();
+    await screen.findByText(mockedPosts[0].title);
+    (axios.get as jest.Mock).mockResolvedValue({ data: { payload: [] } });
+
+    userEvent.type(screen.getByLabelText('Search titles'), 'owl');
+
+    expect(await screen.findByText('No titles match “owl”.')).toBeInTheDocument();
   });
 });

@@ -1,26 +1,15 @@
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Avatar, Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { FormContainer } from 'components/FormContainer/FormContainer';
 import { SignupForm } from 'components/Forms/SignupForm/SignupForm';
 
 export const Signup = (): JSX.Element => (
-  <FormContainer>
-    <Box
-      sx={{
-        marginTop: 8,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography component="h1" variant="h5">
-        Sign up
-      </Typography>
+  <>
+    <Typography component="p" variant="h6" sx={{ textAlign: 'center', pt: 4, color: 'primary.main' }}>
+      Fieldnotes
+    </Typography>
+    <FormContainer title="Sign up" intro="One account lets you read the shared feed and add your own notes.">
       <SignupForm />
-    </Box>
-  </FormContainer>
+    </FormContainer>
+  </>
 );

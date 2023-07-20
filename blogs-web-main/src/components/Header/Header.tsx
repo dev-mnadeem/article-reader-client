@@ -9,9 +9,9 @@ export const Header = (): JSX.Element => {
   const { signOut } = useContext(AuthContext);
 
   return (
-    <AppBar position="static" sx={{ bgcolor: '#263e47', boxShadow: 'none' }}>
-      <Container>
-        <Toolbar disableGutters>
+    <AppBar position="static" color="primary">
+      <Container maxWidth="md">
+        <Toolbar disableGutters sx={{ gap: 1 }}>
           <Typography
             component={RouterLink}
             to={routes.posts}
@@ -20,7 +20,7 @@ export const Header = (): JSX.Element => {
           >
             Fieldnotes
           </Typography>
-          <Button color="inherit" onClick={signOut}>
+          <Button color="inherit" onClick={signOut} sx={{ border: '1px solid rgba(255,253,248,0.5)' }}>
             Sign out
           </Button>
         </Toolbar>

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Box, Button } from '@mui/material';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { postSchema } from 'schemas/postSchema';
 import { NewPostPayload } from 'types/newPostPayload';
@@ -33,9 +33,14 @@ export const PostForm = (): JSX.Element => {
         <Form>
           <TextInput fullWidth name="title" label="Title" autoComplete="off" />
           <TextInput name="content" label="Content" autoComplete="off" multiline fullWidth minRows={4} />
-          <Button type="submit" disabled={isSubmitting} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Create Post
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+            <Button component={RouterLink} to={routes.posts} variant="outlined" sx={{ flex: 1 }}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting} variant="contained" sx={{ flex: 2 }}>
+              Create Post
+            </Button>
+          </Box>
         </Form>
       )}
     </Formik>

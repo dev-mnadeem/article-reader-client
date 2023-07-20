@@ -1,26 +1,18 @@
-export const mockedPosts = [
+import { PostType } from 'types/post';
+
+export const mockedPosts: PostType[] = [
   {
     id: '6f603f74-0a32-4176-848b-94d2969014f1',
-    title: 'Learn Nodejs',
-    content: 'In this blog, we are going to teach you how to learn Nodejs.',
-    createdAt: '2023-07-20T12:13:49.908Z',
+    title: 'Heron at the weir',
+    content: 'Grey heron fishing below the weir at 07:10, same spot as last week.',
+    createdAt: '2026-10-20T07:13:49.908Z',
+    author: { name: 'Ines Calloway' },
   },
   {
     id: '8bfce472-ad3e-431b-8f9c-8807a1e127e5',
-    title: 'Getting Started with Express',
-    content: 'Learn how to set up and use Express.js, the popular Node.js web framework.',
-    createdAt: '2023-07-20T12:23:49.908Z',
-  },
-  {
-    id: '1f33b3ea-47f3-4bb3-851c-7f6327edf2e3',
-    title: 'JavaScript Design Patterns',
-    content: 'Explore various design patterns in JavaScript to write maintainable code.',
-    createdAt: '2023-07-20T12:33:49.908Z',
-  },
-  {
-    id: '13cc55ec-7a07-43e4-8ed0-f5e133a43faf',
-    title: 'CSS Flexbox Tutorial',
-    content: 'This tutorial will teach you all about CSS Flexbox and how to create responsive layouts.',
-    createdAt: '2023-07-20T12:43:49.908Z',
+    title: 'Lichen survey, north wall',
+    content: 'Three new rosettes of Xanthoria on the north wall since spring.',
+    createdAt: '2026-10-19T12:23:49.908Z',
+    author: { name: 'Tomas Reyna' },
   },
 ];
