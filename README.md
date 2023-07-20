@@ -129,7 +129,7 @@ The integration suite **deletes every row** in the database named by `TEST_DATAB
 
 - Sessions are a JavaScript-readable cookie holding the JWT (`SameSite=Strict`, `Secure` on HTTPS, one hour). Sign-out is local; a copied token stays valid until it expires.
 - No rate limiting, pagination beyond the newest 50, password reset or email verification.
-- The remaining audit findings are in development tooling only: the Prisma CLI's config loader (deepmerge-ts), typescript-eslint/nodemon (minimatch) and six moderate findings in the web toolchain.
+- Open audit findings are moderate only: minimatch inside the API's dev tooling, and two React Router 6 advisories (SSR error hydration, backslash open redirect in `<Link>`/`useNavigate`) that are fixed only in React Router 7. This client renders in the browser and only navigates to its own constant routes.
 
 ## License
 
