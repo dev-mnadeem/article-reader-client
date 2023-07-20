@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SearchIcon from '@mui/icons-material/Search';
+// Named import: the per-icon '@mui/icons-material/Search' entry is CommonJS and its default
+// export resolved to a module object in the Vite production bundle (React error #130).
+import { Search as SearchIcon } from '@mui/icons-material';
 import { Alert, Box, Button, CircularProgress, Container, InputAdornment, TextField, Typography } from '@mui/material';
 import { AuthContext } from 'contexts/AuthContext';
 import { PostType } from 'types/post';
