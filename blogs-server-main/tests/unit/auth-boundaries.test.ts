@@ -1,13 +1,24 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
+import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import authenticate from '../../src/middlewares/authMiddleware';
 import { getJwtKey } from '../../src/helpers/tokenConfig';
 const key = 'synthetic-test-key-only-32-characters-minimum';
 function accepts(token?: string) {
   let accepted = false;
-  const response: any = { status() { return this; }, json() { return this; } };
-  authenticate({ headers: token ? { authtoken: token } : {} } as any, response, () => { accepted = true; });
+  const response = {
+    status() {
+      return this;
+    },
+    json() {
+      return this;
+    },
+  } as unknown as Response;
+  const request = { headers: token ? { authtoken: token } : {} } as Request;
+  authenticate(request, response, () => {
+    accepted = true;
+  });
   return accepted;
 }
 test('configuration rejects missing and short signing keys', () => {

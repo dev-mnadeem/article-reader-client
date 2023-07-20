@@ -48,7 +48,10 @@ describe('signup and login against PostgreSQL', () => {
 
   test('wrong password and unknown email get the same 401', async () => {
     await api().post('/api/auth/signup').send(demoUser).expect(200);
-    const wrong = await api().post('/api/auth/login').send({ ...demoUser, password: 'not-the-one' }).expect(401);
+    const wrong = await api()
+      .post('/api/auth/login')
+      .send({ ...demoUser, password: 'not-the-one' })
+      .expect(401);
     const unknown = await api()
       .post('/api/auth/login')
       .send({ email: 'nobody@example.com', password: demoUser.password })

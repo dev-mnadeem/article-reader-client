@@ -50,7 +50,11 @@ describe('posts feed against PostgreSQL', () => {
   test(`the feed is capped at ${FEED_LIMIT} posts`, async () => {
     const author = await prisma.user.findFirstOrThrow();
     await prisma.post.createMany({
-      data: Array.from({ length: FEED_LIMIT + 5 }, (_, i) => ({ title: `Note ${i}`, content: 'x', authorId: author.id })),
+      data: Array.from({ length: FEED_LIMIT + 5 }, (_, i) => ({
+        title: `Note ${i}`,
+        content: 'x',
+        authorId: author.id,
+      })),
     });
     const res = await api().get('/api/posts').set('authtoken', token).expect(200);
     assert.equal(res.body.payload.length, FEED_LIMIT);

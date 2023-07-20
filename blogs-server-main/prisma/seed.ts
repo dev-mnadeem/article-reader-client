@@ -1,5 +1,4 @@
 import { USER } from '../src/interfaces/user';
-import { POST } from '../src/interfaces/post';
 import POSTS from '../src/constants/posts';
 import { encryptData } from '../src/helpers/encryptionHelpers';
 import prisma from '../src/db';

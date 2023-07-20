@@ -22,7 +22,9 @@ describe('registration schema', () => {
   });
 
   test('rejects malformed email and short names', async () => {
-    await assert.rejects(userRegistrationSchema.validate({ name: 'Al', email: 'al@example.com', password: 'longenough' }));
+    await assert.rejects(
+      userRegistrationSchema.validate({ name: 'Al', email: 'al@example.com', password: 'longenough' })
+    );
     await assert.rejects(userRegistrationSchema.validate({ name: 'Alba', email: 'alba', password: 'longenough' }));
   });
 });

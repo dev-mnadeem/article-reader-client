@@ -25,7 +25,10 @@ describe('HTTP boundaries without a database', () => {
   });
 
   test('validation failures name the offending field', async () => {
-    const res = await supertest(app).post('/api/auth/signup').send({ name: 'Ines Calloway', email: 'nope' }).expect(400);
+    const res = await supertest(app)
+      .post('/api/auth/signup')
+      .send({ name: 'Ines Calloway', email: 'nope' })
+      .expect(400);
     assert.match(res.body.message, /email|password/);
   });
 

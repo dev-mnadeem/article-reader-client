@@ -6,8 +6,10 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "dev": "nodemon src/app.ts",
-    "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
+    "pretty": "prettier --write \"{src,tests,prisma}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts",
+    "format:check": "prettier --check \"{src,tests,prisma}/**/*.ts\"",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "node --test --require ts-node/register \"tests/unit/*.test.ts\"",
     "test:integration": "node --test --test-concurrency=1 --require ts-node/register \"tests/integration/*.test.ts\""
