@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fieldnotes
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: blogs
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U fieldnotes -d blogs']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./blogs-server-main
+    environment:
+      DATABASE_URL: postgresql://fieldnotes:${POSTGRES_PASSWORD}@db:5432/blogs
+      JWT_KEY: ${JWT_KEY:?set JWT_KEY in .env (32+ characters)}
+      REACT_APP_URL: http://localhost:3000
+    ports:
+      - '127.0.0.1:8080:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8080/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build:
+      context: ./blogs-web-main
+      args:
+        REACT_APP_API_URL: http://localhost:8080/api
+    ports:
+      - '127.0.0.1:3000:80'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  db-data:

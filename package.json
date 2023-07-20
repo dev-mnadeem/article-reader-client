@@ -1,16 +1,18 @@
 {
-  "name": "blogs",
+  "name": "fieldnotes",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "concurrently \"cd blogs-server-main && yarn run start\" \"cd blogs-web-main && yarn run start\" ",
-    "install-server": "cd blogs-server-main && yarn install",
-    "install-web": "cd blogs-web-main && yarn install"
+  "private": true,
+  "description": "Fieldnotes: a shared text feed with an Express/Prisma API and a React/MUI client.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0 <23"
   },
-  "keywords": [],
-  "license": "ISC",
+  "scripts": {
+    "install:all": "npm --prefix blogs-server-main ci && yarn --cwd blogs-web-main install --frozen-lockfile",
+    "dev": "concurrently -n api,web \"npm --prefix blogs-server-main run dev\" \"yarn --cwd blogs-web-main start\"",
+    "test": "npm --prefix blogs-server-main run test:unit && yarn --cwd blogs-web-main test"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^9.2.5"
   }
 }

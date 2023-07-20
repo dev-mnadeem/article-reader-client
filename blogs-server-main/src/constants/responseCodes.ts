@@ -7,6 +7,7 @@ const RESPONSE_CODES: ResponseCodes = {
   notFound: 404,
   conflictError: 409,
   serverError: 500,
+  serviceUnavailable: 503,
 };
 
 export default RESPONSE_CODES;

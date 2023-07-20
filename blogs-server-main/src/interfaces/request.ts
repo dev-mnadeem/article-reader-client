@@ -11,4 +11,5 @@ export interface ResponseCodes {
   notFound: number;
   conflictError: number;
   serverError: number;
+  serviceUnavailable: number;
 }
