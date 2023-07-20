@@ -1,14 +1,12 @@
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import RESPONSE_CODES from '../constants/responseCodes';
 import { compareData, encryptData } from '../helpers/encryptionHelpers';
 import { isUniqueViolation } from '../helpers/prismaErrors';
 import sendResponse from '../helpers/responseHelper';
 import { issueToken } from '../helpers/tokenConfig';
 import { userAuthSchema, userRegistrationSchema } from '../validationSchemas/userSchema';
-
-const prisma = new PrismaClient();
+import prisma from '../db';
 
 // Unknown emails are compared against this hash so both login failures cost one bcrypt round.
 const unknownUserHash = encryptData(randomBytes(16).toString('hex'));

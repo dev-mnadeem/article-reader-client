@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { USER } from '../src/interfaces/user';
 import { POST } from '../src/interfaces/post';
 import POSTS from '../src/constants/posts';
 import { encryptData } from '../src/helpers/encryptionHelpers';
-
-const prisma = new PrismaClient();
+import prisma from '../src/db';
 
 const userData: USER = {
   name: 'John Doe',

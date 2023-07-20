@@ -1,12 +1,11 @@
 import { Response } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import RESPONSE_CODES from '../constants/responseCodes';
 import { isForeignKeyViolation } from '../helpers/prismaErrors';
 import sendResponse from '../helpers/responseHelper';
 import { CustomRequest } from '../interfaces/request';
 import { createPostSchema } from '../validationSchemas/postsSchema';
-
-const prisma = new PrismaClient();
+import prisma from '../db';
 
 export const FEED_LIMIT = 50;
 

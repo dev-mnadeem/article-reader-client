@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { compareData } from './encryptionHelpers';
 import { issueToken } from './tokenConfig';
-
-const prisma = new PrismaClient();
+import prisma from '../db';
 
 export const generateAuthToken = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
