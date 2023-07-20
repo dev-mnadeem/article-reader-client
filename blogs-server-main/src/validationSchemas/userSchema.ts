@@ -1,12 +1,15 @@
 import { object, string } from 'yup';
 
+const email = string().trim().lowercase().email().required();
+
 export const userRegistrationSchema = object({
-  name: string().required().min(3),
-  email: string().email().required().nonNullable(),
-  password: string().min(8).max(12).required(),
+  name: string().trim().required().min(3).max(80),
+  email,
+  // bcrypt only reads the first 72 bytes, so longer passwords would be silently truncated.
+  password: string().required().min(8).max(72),
 });
 
 export const userAuthSchema = object({
-  email: string().email().required().nonNullable(),
-  password: string().required().nonNullable(),
+  email,
+  password: string().required(),
 });

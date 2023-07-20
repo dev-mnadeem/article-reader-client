@@ -1,14 +1,19 @@
-import { Request, Response, NextFunction } from 'express';
-
+import { NextFunction, Request, Response } from 'express';
+import { ValidationError } from 'yup';
+import RESPONSE_CODES from '../constants/responseCodes';
 import sendResponse from './responseHelper';
 
-const exceptionHandler = (executable: Function) => async (req: Request, res: Response, next: NextFunction) => {
+type Handler = (req: Request, res: Response, next: NextFunction) => Promise<unknown>;
+
+const exceptionHandler = (executable: Handler) => async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await executable(req, res, next);
-    return result;
-  } catch (error: any) {
-    const errorCode = error.name === 'ValidationError' ? 400 : 500;
-    sendResponse(res, {}, errorCode === 400 ? 'Invalid request' : 'Internal server error', errorCode);
+    return await executable(req, res, next);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return sendResponse(res, null, error.errors[0] ?? 'Invalid request', RESPONSE_CODES.badRequest);
+    }
+    console.error(error);
+    return sendResponse(res, null, 'Internal server error', RESPONSE_CODES.serverError);
   }
 };
 

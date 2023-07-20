@@ -1,50 +1,50 @@
 import { Response } from 'express';
-import { CustomRequest } from '../interfaces/request';
+import { Prisma, PrismaClient } from '@prisma/client';
+import RESPONSE_CODES from '../constants/responseCodes';
+import { isForeignKeyViolation } from '../helpers/prismaErrors';
 import sendResponse from '../helpers/responseHelper';
+import { CustomRequest } from '../interfaces/request';
 import { createPostSchema } from '../validationSchemas/postsSchema';
-import { PrismaClient } from '@prisma/client';
 
-// Initialize Prisma client
 const prisma = new PrismaClient();
 
-// Function to add a new post
+export const FEED_LIMIT = 50;
+
+const publicPostFields = {
+  id: true,
+  title: true,
+  content: true,
+  createdAt: true,
+  author: { select: { name: true } },
+} satisfies Prisma.PostSelect;
+
 export const addPost = async (req: CustomRequest, res: Response) => {
-  // Validate request body
-  await createPostSchema.validate(req.body);
-  const userId = req.userId as string;
-  const { title, content } = req.body;
-  // Create post in the database
-  await prisma.post.create({
-    data: {
-      title,
-      content,
-      authorId: userId,
-    },
-  });
-  // Send success response
-  sendResponse(res);
+  const { title, content } = await createPostSchema.validate(req.body);
+
+  try {
+    const post = await prisma.post.create({
+      data: { title, content, authorId: req.userId as string },
+      select: publicPostFields,
+    });
+    return sendResponse(res, post);
+  } catch (error) {
+    // A valid token can outlive its account (for example after the database is reset).
+    if (isForeignKeyViolation(error)) {
+      return sendResponse(res, {}, 'Unauthorized user', RESPONSE_CODES.authorizationError);
+    }
+    throw error;
+  }
 };
 
-// Function to get posts based on query parameters
 export const getPosts = async (req: CustomRequest, res: Response) => {
-  const title = req.query.title as string;
+  const title = typeof req.query.title === 'string' ? req.query.title.trim() : '';
 
-  // Define where options for querying posts
-  const whereOptions: any = {};
-
-  // If title query parameter is provided, filter posts by title
-  if (title) {
-    whereOptions.title = {
-      contains: title,
-      mode: 'insensitive',
-    };
-  }
-
-  // Find posts in the database based on where options
   const posts = await prisma.post.findMany({
-    where: whereOptions,
+    where: title ? { title: { contains: title, mode: 'insensitive' } } : undefined,
+    orderBy: { createdAt: 'desc' },
+    take: FEED_LIMIT,
+    select: publicPostFields,
   });
 
-  // Send response with retrieved posts
-  sendResponse(res, posts);
+  return sendResponse(res, posts);
 };

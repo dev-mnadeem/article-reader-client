@@ -6,7 +6,9 @@ export interface CustomRequest extends Request {
 
 export interface ResponseCodes {
   ok: number;
-  serverError: number;
+  badRequest: number;
   authorizationError: number;
+  notFound: number;
   conflictError: number;
+  serverError: number;
 }

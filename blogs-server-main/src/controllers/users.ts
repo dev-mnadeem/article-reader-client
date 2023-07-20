@@ -1,55 +1,39 @@
-import { getJwtKey } from '../helpers/tokenConfig';
+import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
-import { userAuthSchema, userRegistrationSchema } from '../validationSchemas/userSchema';
 import { PrismaClient } from '@prisma/client';
-import sendResponse from '../helpers/responseHelper';
-import { compareData, encryptData } from '../helpers/encryptionHelpers';
-import jwt from 'jsonwebtoken';
 import RESPONSE_CODES from '../constants/responseCodes';
+import { compareData, encryptData } from '../helpers/encryptionHelpers';
+import { isUniqueViolation } from '../helpers/prismaErrors';
+import sendResponse from '../helpers/responseHelper';
+import { issueToken } from '../helpers/tokenConfig';
+import { userAuthSchema, userRegistrationSchema } from '../validationSchemas/userSchema';
 
 const prisma = new PrismaClient();
 
+// Unknown emails are compared against this hash so both login failures cost one bcrypt round.
+const unknownUserHash = encryptData(randomBytes(16).toString('hex'));
+
 export const handleSignup = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = await userRegistrationSchema.validate(req.body);
 
-  await userRegistrationSchema.validate(req.body);
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-  if (user) {
-    return sendResponse(res, null, 'User already exists', RESPONSE_CODES.conflictError);
+  try {
+    await prisma.user.create({ data: { name, email, password: await encryptData(password) } });
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return sendResponse(res, null, 'User already exists', RESPONSE_CODES.conflictError);
+    }
+    throw error;
   }
-  const encryptedPassword = await encryptData(password);
-
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: encryptedPassword,
-    },
-  });
   return sendResponse(res);
 };
 
 export const handleLogin = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  await userAuthSchema.validate(req.body);
+  const { email, password } = await userAuthSchema.validate(req.body);
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-  if (user) {
-    const isAuth = await compareData(password, user.password);
-    const jwtKey = getJwtKey();
-    if (isAuth) {
-      const token = jwt.sign({ user: user.id }, jwtKey, { algorithm: 'HS256', expiresIn: '1h' });
-      return sendResponse(res, { authtoken: token });
-    }
+  const user = await prisma.user.findUnique({ where: { email } });
+  const isAuth = await compareData(password, user?.password ?? (await unknownUserHash));
+  if (!user || !isAuth) {
+    return sendResponse(res, null, 'Invalid email/password', RESPONSE_CODES.authorizationError);
   }
-  return sendResponse(res, null, 'Invalid email/password', RESPONSE_CODES.authorizationError);
+  return sendResponse(res, { authtoken: issueToken(user.id) });
 };
