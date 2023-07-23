@@ -1,0 +1,21 @@
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Keyboard users must always be able to see where they are.
+:focus-visible {
+  outline: 2px solid #1b3a6b;
+  outline-offset: 2px;
+}
