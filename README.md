@@ -70,3 +70,31 @@ There's a multi-stage `Dockerfile` that builds the app and serves it with nginx 
 - Cards don't show author names because the API only returns `authorId`.
 - No edit, delete or single post page yet (the API doesn't support them).
 - Move off Create React App to Vite.
+
+## Request and session flow
+
+```mermaid
+flowchart LR
+    Form[Sign-in form] --> Login[Auth service]
+    Login --> API[Article API]
+    API --> Token[TokenStore]
+    Token --> Client[Authenticated HTTP client]
+    Client --> Feed[Paginated feed]
+    Client --> Editor[New post form]
+    Client --> Unauthorized[401 response]
+    Unauthorized --> Clear[Clear token and return to sign in]
+```
+
+## Verified against the real API
+
+![Native desktop post feed](docs/screenshots/native-desktop.png)
+
+[Mobile capture](docs/screenshots/native-mobile.png). These captures use the
+built client with the real
+[article-publishing-api](https://github.com/dev-mnadeem/article-publishing-api)
+and a disposable PostgreSQL database. Browser checks cover sign-in, publishing
+a synthetic post, seeing it in the feed, and sign-out. The mock server remains
+available for isolated UI development and is not used for this capture.
+
+Node 22 is the validated runtime. CI installs the frozen Yarn lock, runs the
+57-test suite, and builds the client. Container execution remains unverified.
