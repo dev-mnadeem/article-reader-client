@@ -98,3 +98,7 @@ available for isolated UI development and is not used for this capture.
 
 Node 22 is the validated runtime. CI installs the frozen Yarn lock, runs the
 57-test suite, and builds the client. Container execution remains unverified.
+
+## Author
+
+[**Muhammad Nadeem**](https://github.com/dev-mnadeem)
